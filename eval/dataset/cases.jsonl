@@ -1,0 +1,234 @@
+{"id": "C01", "type": "date", "description": "基础日期冲突：会议改期，PRD 未同步",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "# Alpha V2.0 PRD\n\nAlpha V2.0 将于 2026 年 9 月 20 日正式发布。"},
+  {"name": "weekly_0905.md", "content": "# 0905 周会\n\n日期：2026-09-05\n\n由于联调延期，Alpha V2.0 发布时间由 9 月 20 日调整至 9 月 27 日。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["PRD.md"], "no_conflicts": ["weekly_0905.md"]}}
+
+{"id": "C02", "type": "historical", "description": "历史语义：旧会议纪要里的旧日期不是冲突（方案书 Case 02 变体）",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "Alpha V2.0 将于 2026 年 9 月 20 日正式发布。"},
+  {"name": "weekly_0829.md", "content": "# 0829 周会\n\nAlpha V2.0 计划于 9 月 20 日正式发布。"},
+  {"name": "weekly_0905.md", "content": "# 0905 周会\n\nAlpha V2.0 发布时间由 9 月 20 日调整至 9 月 27 日。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["PRD.md"], "no_conflicts": ["weekly_0829.md", "weekly_0905.md"]}}
+
+{"id": "C03", "type": "entity", "description": "实体区分：Alpha 改期不应波及 Beta（方案书 Case 03）",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]},
+                      {"canonical_name": "Beta V1.0", "aliases": ["Beta"]}],
+ "docs": [
+  {"name": "PRD_alpha.md", "content": "Alpha V2.0 上线日期：2026-09-20。"},
+  {"name": "PRD_beta.md", "content": "Beta V1.0 上线日期：2026-09-20。"},
+  {"name": "weekly_0905.md", "content": "Alpha V2.0 发布时间由 9 月 20 日调整至 9 月 27 日。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["PRD_alpha.md"], "no_conflicts": ["PRD_beta.md"]}}
+
+{"id": "C04", "type": "unverified", "description": "低置信度变更（可能/暂定）→ Unverified，不触发冲突",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "Alpha V2.0 将于 2026 年 9 月 20 日正式发布。"},
+  {"name": "weekly_0905.md", "content": "# 0905 周会\n\n上线时间可能要延到 9 月 27 日，暂定。"}
+ ],
+ "expect": {"change_detected": false, "conflicts": [], "no_conflicts": []}}
+
+{"id": "C05", "type": "no_change", "description": "会议重申旧日期，无变化",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "Alpha V2.0 将于 2026 年 9 月 20 日正式发布。"},
+  {"name": "weekly_0905.md", "content": "# 0905 周会\n\n本周确认 Alpha V2.0 保持 9 月 20 日上线不变。"}
+ ],
+ "expect": {"change_detected": false, "conflicts": [], "no_conflicts": []}}
+
+{"id": "C06", "type": "date", "description": "排期表键值对冲突 + 回归截止依赖影响",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "release_plan.md", "content": "Project: Alpha V2.0\nRelease Date: 2026-09-20\nRegression Deadline: 2026-09-18"},
+  {"name": "weekly_0905.md", "content": "Alpha V2.0 发布时间由 9 月 20 日调整至 9 月 27 日。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["release_plan.md"], "no_conflicts": [], "impacts": ["regression_deadline"]}}
+
+{"id": "C07", "type": "historical", "description": "活文档中的历史表述（原计划…）不算冲突",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "Alpha V2.0 将于 2026 年 9 月 20 日正式发布。"},
+  {"name": "notes.md", "content": "备注：项目原计划 9 月 20 日上线，后因支付联调顺延，具体以周会为准。"},
+  {"name": "weekly_0905.md", "content": "Alpha V2.0 发布时间由 9 月 20 日调整至 9 月 27 日。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["PRD.md"], "no_conflicts": ["notes.md"]}}
+
+{"id": "C08", "type": "predicate", "description": "同日期不同谓词（回归 09-20）不应误报为上线日期冲突",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "Alpha V2.0 将于 2026 年 9 月 20 日正式发布。"},
+  {"name": "test_plan.md", "content": "回归测试将于 9 月 20 日完成。"},
+  {"name": "weekly_0905.md", "content": "Alpha V2.0 发布时间由 9 月 20 日调整至 9 月 27 日。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["PRD.md"], "no_conflicts": ["test_plan.md"]}}
+
+{"id": "C09", "type": "diverged", "description": "三方分叉（两次连续变更）：tracking 改 09-25 时 PRD 即刻过时；周会再改 09-27 后 tracking 过时、PRD 转为需人工判断",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "Alpha V2.0 将于 2026 年 9 月 20 日正式发布。"},
+  {"name": "tracking.md", "content": "当前口径：Alpha V2.0 上线 09-25。"},
+  {"name": "weekly_0905.md", "content": "Alpha V2.0 发布时间由 09-25 调整至 9 月 27 日。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["tracking.md", "PRD.md"], "no_conflicts": [], "need_review": ["PRD.md"]}}
+
+{"id": "C10", "type": "date", "description": "多文档同时携带旧值，全部报冲突",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "Alpha V2.0 将于 2026 年 9 月 20 日正式发布。"},
+  {"name": "launch_plan.md", "content": "Alpha V2.0 定于 9 月 20 日正式上线。"},
+  {"name": "status_page.md", "content": "上线日期：09-20"},
+  {"name": "weekly_0905.md", "content": "Alpha V2.0 发布时间由 9 月 20 日调整至 9 月 27 日。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["PRD.md", "launch_plan.md", "status_page.md"], "no_conflicts": []}}
+
+{"id": "C11", "type": "no_change", "description": "首份文档上传，无既有事实，无变化",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "Alpha V2.0 将于 2026 年 9 月 20 日正式发布。"}
+ ],
+ "expect": {"change_detected": false, "conflicts": [], "no_conflicts": []}}
+
+{"id": "C12", "type": "date", "description": "短格式日期（09-20）跨文档一致归一化",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "Alpha V2.0 上线日期：09-20。"},
+  {"name": "weekly_0905.md", "content": "Alpha V2.0 上线由 09-20 调整为 09-27。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["PRD.md"], "no_conflicts": []}}
+
+{"id": "C13", "type": "limitation", "description": "已知局限：相对日期（下周三）不解析 → 不产生事实、不产生误报（宁可漏报不误报）",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha", "V2.0"]}],
+ "docs": [
+  {"name": "PRD.md", "content": "Alpha V2.0 将于 2026 年 9 月 20 日正式发布。"},
+  {"name": "weekly_0905.md", "content": "# 0905 周会\n\n上线时间往后挪到下周三，具体日子等通知。"}
+ ],
+ "expect": {"change_detected": false, "conflicts": [], "no_conflicts": []}}
+
+{"id": "C14", "type": "date", "description": "斜杠日期格式归一化",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "prd.md", "content": "Alpha V2.0 Release Date: 2026/10/03"},
+  {"name": "decision.md", "content": "Alpha V2.0 release date 由 2026/10/03 调整至 2026/10/10。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["prd.md"], "no_conflicts": []}}
+
+{"id": "C15", "type": "date", "description": "带空格中文完整日期",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "launch.md", "content": "Alpha V2.0 正式上线时间为 2026 年 10 月 3 日。"},
+  {"name": "decision.md", "content": "Alpha V2.0 上线时间由 2026 年 10 月 3 日变更至 2026 年 10 月 10 日。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["launch.md"], "no_conflicts": []}}
+
+{"id": "C16", "type": "entity", "description": "Beta 改期不波及相同日期的 Alpha",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}, {"canonical_name": "Beta V1.0", "aliases": ["Beta"]}],
+ "docs": [
+  {"name": "alpha.md", "content": "Alpha V2.0 上线日期：2026-10-03。"},
+  {"name": "beta.md", "content": "Beta V1.0 上线日期：2026-10-03。"},
+  {"name": "decision.md", "content": "Beta V1.0 上线日期由 2026-10-03 调整至 2026-10-12。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["beta.md"], "no_conflicts": ["alpha.md"]}}
+
+{"id": "C17", "type": "historical", "description": "历史周报保留旧日期",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "plan.md", "content": "Alpha V2.0 上线日期：2026-10-03。"},
+  {"name": "weekly_report.md", "content": "Alpha V2.0 计划于 2026-10-03 上线。"},
+  {"name": "decision.md", "content": "Alpha V2.0 上线日期由 2026-10-03 调整至 2026-10-12。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["plan.md"], "no_conflicts": ["weekly_report.md"]}}
+
+{"id": "C18", "type": "historical", "description": "活文档中的原定日期不应更新",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "plan.md", "content": "Alpha V2.0 上线日期：2026-10-03。"},
+  {"name": "retrospective.md", "content": "Alpha V2.0 原定 2026-10-03 上线，风险已记录。"},
+  {"name": "decision.md", "content": "Alpha V2.0 上线日期由 2026-10-03 调整至 2026-10-12。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["plan.md"], "no_conflicts": ["retrospective.md"]}}
+
+{"id": "C19", "type": "unverified", "description": "带实体的模糊决策仍进入 Unverified",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "plan.md", "content": "Alpha V2.0 上线日期：2026-10-03。"},
+  {"name": "chat.md", "content": "Alpha V2.0 上线时间大概改到 2026-10-12，暂定。"}
+ ],
+ "expect": {"change_detected": false, "conflicts": [], "no_conflicts": []}}
+
+{"id": "C20", "type": "limitation", "description": "非法日期被确定性校验拒绝",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "plan.md", "content": "Alpha V2.0 上线日期：2026-10-03。"},
+  {"name": "decision.md", "content": "Alpha V2.0 上线日期调整至 2026-02-30。"}
+ ],
+ "expect": {"change_detected": false, "conflicts": [], "no_conflicts": []}}
+
+{"id": "C21", "type": "impact", "description": "公告日期模板依赖被识别",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "comms.md", "content": "Alpha V2.0 公告日期：2026-10-02。\n上线日期：2026-10-03。"},
+  {"name": "decision.md", "content": "Alpha V2.0 上线日期由 2026-10-03 调整至 2026-10-12。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["comms.md"], "no_conflicts": [], "impacts": ["announcement_date"]}}
+
+{"id": "C22", "type": "impact", "description": "灰度日期模板依赖被识别",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "launch.md", "content": "Alpha V2.0 灰度发布日期：2026-10-01。\n正式上线日期：2026-10-03。"},
+  {"name": "decision.md", "content": "Alpha V2.0 上线日期由 2026-10-03 调整至 2026-10-12。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["launch.md"], "no_conflicts": [], "impacts": ["gray_release_date"]}}
+
+{"id": "C23", "type": "date", "description": "跨月改期",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "plan.md", "content": "Alpha V2.0 上线日期：2026-10-30。"},
+  {"name": "decision.md", "content": "Alpha V2.0 上线日期由 2026-10-30 延后至 2026-11-06。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["plan.md"], "no_conflicts": []}}
+
+{"id": "C24", "type": "date", "description": "提前发布同样形成变更与旧值冲突",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "plan.md", "content": "Alpha V2.0 上线日期：2026-10-30。"},
+  {"name": "decision.md", "content": "Alpha V2.0 上线日期由 2026-10-30 调整至 2026-10-23。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["plan.md"], "no_conflicts": []}}
+
+{"id": "C25", "type": "predicate", "description": "旧上线日期与公告日期相同，不把公告行当直接冲突",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "release.md", "content": "Alpha V2.0 上线日期：2026-10-03。"},
+  {"name": "announcement.md", "content": "Alpha V2.0 公告日期：2026-10-03。"},
+  {"name": "decision.md", "content": "Alpha V2.0 上线日期由 2026-10-03 调整至 2026-10-12。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["release.md"], "no_conflicts": ["announcement.md"], "impacts": ["announcement_date"]}}
+
+{"id": "C26", "type": "date", "description": "跨年延期时无年份的新日期继承下一年",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "plan.md", "content": "Alpha V2.0 上线日期：2026-12-28。"},
+  {"name": "decision.md", "content": "Alpha V2.0 上线时间由 2026 年 12 月 28 日延期至 1 月 4 日。"}
+ ],
+ "expect": {"change_detected": true, "conflicts": ["plan.md"], "no_conflicts": []}}
+
+{"id": "C27", "type": "authority", "description": "后上传的旧 PRD 不得仅凭上传顺序倒退当前事实",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "decision_record.md", "content": "Alpha V2.0 当前上线日期：2026-09-27。"},
+  {"name": "copied_old_prd.md", "content": "Alpha V2.0 上线日期：2026-09-20。"}
+ ],
+ "expect": {"change_detected": false, "conflicts": [], "no_conflicts": []}}
+
+{"id": "C28", "type": "authority", "description": "改期声明的旧值不等于当前事实时不自动建立分叉",
+ "preset_entities": [{"canonical_name": "Alpha V2.0", "aliases": ["Alpha"]}],
+ "docs": [
+  {"name": "current.md", "content": "Alpha V2.0 当前上线日期：2026-09-27。"},
+  {"name": "stale_decision.md", "content": "Alpha V2.0 上线日期由 2026-09-20 调整至 2026-10-04。"}
+ ],
+ "expect": {"change_detected": false, "conflicts": [], "no_conflicts": []}}

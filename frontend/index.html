@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="WorkGuard 跨文档事实一致性与变更影响中心">
+  <title>WorkGuard · Change Center</title>
+  <link rel="stylesheet" href="/app/styles.css?v=20260908">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="/app/" aria-label="WorkGuard 首页">
+        <span class="brand-mark">WG</span>
+        <span><strong>WorkGuard</strong><small>Evidence before action</small></span>
+      </a>
+      <nav aria-label="主导航">
+        <button class="nav-item active" data-view="changes"><span>◫</span> Change Center</button>
+        <button class="nav-item" data-view="upload"><span>↑</span> Upload</button>
+        <button class="nav-item" data-view="facts"><span>◇</span> Facts</button>
+        <button class="nav-item" data-view="entities"><span>◉</span> 实体消歧 <span id="entity-count" class="count-pill subtle">0</span></button>
+        <button class="nav-item" data-view="runs"><span>↻</span> Runs</button>
+        <button class="nav-item" data-view="feishu"><span>⇄</span> 飞书</button>
+        <button class="nav-item" data-view="audit"><span>≡</span> Audit Log</button>
+      </nav>
+      <div class="sidebar-note">
+        <span class="pulse"></span>
+        <div><strong>Guardrail active</strong><small>所有写操作等待人工批准</small></div>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">WORKSPACE</p>
+          <h1 id="view-title">Change Center</h1>
+        </div>
+        <div class="workspace-control">
+          <label for="workspace-id">Workspace ID</label>
+          <div><input id="workspace-id" placeholder="ws_..." autocomplete="off"><button id="load-workspace" class="icon-button" title="加载工作区">→</button></div>
+          <div><input id="api-key" type="password" placeholder="API Key（共享部署）" autocomplete="off"><input id="workspace-key" type="password" placeholder="Workspace Key" autocomplete="off"></div>
+        </div>
+      </header>
+
+      <section id="setup" class="setup-panel">
+        <div>
+          <p class="eyebrow">ONE-CLICK DEMO</p>
+          <h2>让一次改期，找到所有该变的地方。</h2>
+          <p>载入 Alpha 示例工作区，查看 WorkGuard 如何识别跨 DOCX、XLSX 与 Markdown 的事实冲突。</p>
+        </div>
+        <button id="start-demo" class="primary-button">载入演示数据 <span>→</span></button>
+      </section>
+
+      <section id="metrics" class="metrics" aria-label="工作区概览">
+        <article><span>OPEN CHANGES</span><strong id="metric-changes">—</strong><small>检测到的事实变更</small></article>
+        <article><span>DIRECT CONFLICTS</span><strong id="metric-conflicts">—</strong><small>明确需要同步</small></article>
+        <article><span>NEED APPROVAL</span><strong id="metric-approval">—</strong><small>等待人工决策</small></article>
+        <article class="safe"><span>UNSAFE WRITES</span><strong>0</strong><small>批准前无文件落盘</small></article>
+      </section>
+
+      <section id="changes-view" class="workspace-grid">
+        <div class="panel change-list-panel">
+          <div class="panel-heading"><div><p class="eyebrow">CHANGE QUEUE</p><h2>事实变更</h2></div><span id="change-count" class="count-pill">0</span></div>
+          <div id="change-list" class="change-list"><div class="empty">载入工作区后显示变更</div></div>
+        </div>
+
+        <div id="change-detail" class="panel detail-panel">
+          <div class="empty large"><span class="empty-icon">◎</span><strong>等待选择变更</strong><small>来源、冲突、潜在影响与修改计划会在这里展开。</small></div>
+        </div>
+      </section>
+
+      <section id="upload-view" class="panel upload-panel hidden">
+        <div class="panel-heading"><div><p class="eyebrow">INGEST</p><h2>上传文档</h2></div></div>
+        <p class="upload-hint">支持 Markdown / TXT / DOCX / XLSX。上传后自动触发：Fact 抽取 → 实体解析 → 冲突检测 → 生成修改计划（等待人工批准）。</p>
+        <div class="new-workspace">
+          <input id="new-ws-name" placeholder="新工作区名称，如：Alpha Workspace">
+          <input id="new-ws-entity" placeholder="预置实体（可选），如：Alpha V2.0">
+          <input id="new-ws-aliases" placeholder="别名（可选），逗号分隔：Alpha, V2.0">
+          <button id="create-workspace" class="secondary-button">创建工作区</button>
+        </div>
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="file-input" multiple accept=".md,.markdown,.txt,.docx,.xlsx,.xlsm">
+          <p><strong>点击选择或拖拽文件到此处</strong></p>
+          <small>当前工作区：<code id="upload-workspace-id">未加载</code></small>
+        </div>
+        <div id="upload-results" class="upload-results"></div>
+      </section>
+
+      <section id="entities-view" class="panel entities-panel hidden">
+        <div class="panel-heading"><div><p class="eyebrow">ENTITY RESOLUTION</p><h2>实体消歧</h2></div><button id="refresh-entities" class="secondary-button">刷新</button></div>
+        <p class="upload-hint">当 Agent 无法确定「某提法是否等于已知实体」时，会在这里等待一次人工裁定；裁定结果会写入别名词典，下次自动命中。</p>
+        <div id="entity-list" class="entity-list"><div class="empty">载入工作区后检查待消歧实体</div></div>
+      </section>
+
+      <section id="facts-view" class="panel data-panel hidden">
+        <div class="panel-heading"><div><p class="eyebrow">EVIDENCE STORE</p><h2>事实与低置信度隔离</h2></div><button id="refresh-facts" class="secondary-button">刷新</button></div>
+        <p class="upload-hint">Unverified Fact 仅作为参考，不进入冲突检测；先完成实体消歧或补充更明确的原始证据。</p>
+        <div id="fact-list" class="data-list"><div class="empty">载入工作区后显示事实</div></div>
+      </section>
+
+      <section id="runs-view" class="panel data-panel hidden">
+        <div class="panel-heading"><div><p class="eyebrow">OBSERVABILITY</p><h2>Agent Runs</h2></div><button id="refresh-runs" class="secondary-button">刷新</button></div>
+        <p class="upload-hint">失败 Run 会保存错误原因；重试会创建新 thread，保留原记录用于审计。</p>
+        <div id="run-list" class="data-list"><div class="empty">载入工作区后显示运行记录</div></div>
+      </section>
+
+      <section id="feishu-view" class="panel data-panel hidden">
+        <div class="panel-heading"><div><p class="eyebrow">FEISHU / LARK</p><h2>飞书文档接入</h2></div><button id="refresh-feishu" class="secondary-button">刷新</button></div>
+        <p id="feishu-status" class="upload-hint">正在读取配置状态…</p>
+        <div class="integration-form">
+          <input id="feishu-folder-token" placeholder="飞书云空间 folder_token">
+          <button id="bind-feishu" class="secondary-button">绑定到当前工作区</button>
+          <button id="sync-feishu" class="primary-button">立即同步</button>
+        </div>
+        <div id="feishu-bindings" class="data-list"><div class="empty">暂无绑定</div></div>
+      </section>
+
+      <section id="audit-view" class="panel audit-panel hidden">
+        <div class="panel-heading"><div><p class="eyebrow">TRACEABILITY</p><h2>完整操作记录</h2></div><button id="refresh-audit" class="secondary-button">刷新</button></div>
+        <div id="audit-list" class="audit-list"><div class="empty">暂无审计记录</div></div>
+      </section>
+
+      <div id="toast" role="status" aria-live="polite"></div>
+    </main>
+  </div>
+  <script src="/app/app.js?v=20260908" defer></script>
+</body>
+</html>

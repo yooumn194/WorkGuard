@@ -1,0 +1,28 @@
+.Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+*.egg-info/
+*.db
+*.db-journal
+*.sqlite3
+data/
+!data/.gitkeep
+# Generated evaluation, performance, blind-test and real-integration results
+# are private evidence. Evaluators and protocols are submitted; outputs are not.
+eval/reports/
+demo/workspace_alpha/*.docx
+demo/workspace_alpha/*.xlsx
+demo/workspace_alpha/*.workguard-patch.md
+.env
+.DS_Store
+
+# Personal interview preparation; intentionally excluded from project delivery.
+RESUME.md
+WorkGuard.md
+.private/

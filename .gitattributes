@@ -1,0 +1,5 @@
+/eval/reports export-ignore
+/RESUME.md export-ignore
+/WorkGuard.md export-ignore
+/.private export-ignore
+/.env export-ignore

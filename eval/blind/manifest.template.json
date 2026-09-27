@@ -1,0 +1,11 @@
+{
+  "dataset_id": "office-date-blind-v1",
+  "sha256": "由独立评测人填写 64 位 SHA-256",
+  "case_count": 30,
+  "minimum_groups": 8,
+  "plaintext_location": "repository-external",
+  "created_by": "independent-evaluator",
+  "created_at": "YYYY-MM-DD",
+  "code_freeze_ref": "由项目维护者填写",
+  "disclosure": "aggregate-only until final evaluation"
+}

@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: workguard
+          POSTGRES_PASSWORD: workguard
+          POSTGRES_DB: workguard
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U workguard -d workguard"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install -r requirements-dev.lock
+          python -m pip install --no-deps -e .
+      - name: Lint
+        run: python -m ruff check backend eval tests scripts
+      - name: Type check
+        run: python -m mypy backend
+      - name: Test and coverage gate
+        env:
+          WORKGUARD_LLM_PROVIDER: heuristic
+        run: python -m pytest -q --cov=backend --cov-report=term-missing
+      - name: Evaluation and ablation regression
+        env:
+          WORKGUARD_LLM_PROVIDER: heuristic
+        run: |
+          python eval/evaluator.py
+          python eval/ablation.py
+      - name: Alembic schema check
+        env:
+          WORKGUARD_DB_URL: sqlite:////tmp/workguard_migration_test.db
+        run: |
+          python -m alembic upgrade head
+          python -m alembic check
+      - name: PostgreSQL migration and checkpoint smoke test
+        env:
+          WORKGUARD_DB_URL: postgresql+psycopg://workguard:workguard@127.0.0.1:5432/workguard
+          WORKGUARD_DATA_DIR: /tmp/workguard_postgres_smoke
+          WORKGUARD_LLM_PROVIDER: heuristic
+        run: python scripts/postgres_smoke.py
+
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compose API + worker smoke test
+        run: |
+          trap 'docker compose down -v' EXIT
+          docker compose up -d --build
+          curl --fail --retry 30 --retry-connrefused --retry-delay 1 http://127.0.0.1:8000/health
+          workspace_id=$(curl --fail --silent -X POST http://127.0.0.1:8000/api/workspaces \
+            -H 'Content-Type: application/json' -d '{"name":"compose-smoke"}' | jq -r .workspace_id)
+          job_id=$(curl --fail --silent -X POST \
+            "http://127.0.0.1:8000/api/workspaces/${workspace_id}/artifacts" \
+            -F file=@demo/workspace_alpha/launch_plan.md | jq -r .job_id)
+          status=queued
+          for attempt in $(seq 1 30); do
+            status=$(curl --fail --silent "http://127.0.0.1:8000/api/jobs/${job_id}" | jq -r .status)
+            if [ "$status" = completed ]; then break; fi
+            if [ "$status" = failed ]; then exit 1; fi
+            sleep 1
+          done
+          test "$status" = completed
+          docker compose exec -T api alembic current | grep '20260909_0002 (head)'
+          worker_id=$(docker compose ps -q worker)
+          test "$(docker inspect --format='{{.State.Health.Status}}' "$worker_id")" = healthy

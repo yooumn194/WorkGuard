@@ -1,0 +1,86 @@
+# Optional: PostgreSQL + pgvector for the Phase-3 RAG upgrade path.
+# WorkGuard runs fine on SQLite by default; to switch, set:
+#   WORKGUARD_DB_URL=postgresql+psycopg://workguard:workguard@localhost:5432/workguard
+x-workguard-environment: &workguard-environment
+  WORKGUARD_DB_URL: postgresql+psycopg://workguard:workguard@db:5432/workguard
+  WORKGUARD_CHECKPOINT_PATH: /app/data/workguard_checkpoints.db
+  WORKGUARD_API_KEY: ${WORKGUARD_API_KEY:-}
+  WORKGUARD_WORKSPACE_AUTH: ${WORKGUARD_WORKSPACE_AUTH:-0}
+  WORKGUARD_WORKSPACE_TOKEN_SECRET: ${WORKGUARD_WORKSPACE_TOKEN_SECRET:-}
+  WORKGUARD_AUTO_MIGRATE: "1"
+  WORKGUARD_CORS_ORIGINS: ${WORKGUARD_CORS_ORIGINS:-http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:8765,http://localhost:8765}
+  WORKGUARD_LLM_PROVIDER: ${WORKGUARD_LLM_PROVIDER:-heuristic}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+  WORKGUARD_LLM_MODEL: ${WORKGUARD_LLM_MODEL:-gpt-4o-mini}
+  WORKGUARD_TASK_POLL_SECONDS: ${WORKGUARD_TASK_POLL_SECONDS:-0.5}
+  WORKGUARD_TASK_LEASE_SECONDS: ${WORKGUARD_TASK_LEASE_SECONDS:-900}
+  WORKGUARD_TASK_MAX_ATTEMPTS: ${WORKGUARD_TASK_MAX_ATTEMPTS:-3}
+  FEISHU_APP_ID: ${FEISHU_APP_ID:-}
+  FEISHU_APP_SECRET: ${FEISHU_APP_SECRET:-}
+  FEISHU_FOLDER_TOKEN: ${FEISHU_FOLDER_TOKEN:-}
+  FEISHU_WEBHOOK_URL: ${FEISHU_WEBHOOK_URL:-}
+  FEISHU_VERIFICATION_TOKEN: ${FEISHU_VERIFICATION_TOKEN:-}
+  FEISHU_NOTIFY_RECEIVE_ID: ${FEISHU_NOTIFY_RECEIVE_ID:-}
+  FEISHU_NOTIFY_RECEIVE_ID_TYPE: ${FEISHU_NOTIFY_RECEIVE_ID_TYPE:-chat_id}
+  WORKGUARD_PUBLIC_BASE_URL: ${WORKGUARD_PUBLIC_BASE_URL:-}
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: workguard
+      POSTGRES_PASSWORD: workguard
+      POSTGRES_DB: workguard
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workguard -d workguard"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    ports:
+      # Local-only by default. Put an authenticated reverse proxy in front
+      # before exposing WorkGuard outside the host.
+      - "127.0.0.1:8000:8000"
+    environment:
+      <<: *workguard-environment
+      WORKGUARD_TASK_WORKER: "0"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - workguard_data:/app/data
+    restart: unless-stopped
+
+  worker:
+    build: .
+    command: ["python", "-m", "backend.worker"]
+    environment:
+      <<: *workguard-environment
+      WORKGUARD_TASK_WORKER: "1"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - workguard_data:/app/data
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "from sqlalchemy import text; from backend.db import engine; connection = engine.connect(); connection.execute(text('SELECT 1')); connection.close()"
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  workguard_data:

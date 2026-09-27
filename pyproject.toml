@@ -1,0 +1,78 @@
+[project]
+name = "workguard"
+version = "0.1.0"
+description = "WorkGuard: A Verifiable Agent for Cross-Artifact Consistency and Change Impact Analysis (MVP: date-change chain)"
+requires-python = ">=3.10"
+dependencies = [
+    "langgraph>=1.0",
+    "langgraph-checkpoint-sqlite>=2.0",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "sqlalchemy>=2.0",
+    "psycopg[binary]>=3.1",
+    "pydantic>=2",
+    "python-docx>=1.1",
+    "openpyxl>=3.1",
+    "openai>=1.30",
+    "python-multipart>=0.0.9",
+    "httpx>=0.27",
+    "langgraph-checkpoint-postgres>=3.0",
+    "alembic>=1.13",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    # Starlette 1.6 still annotates TestClient with an alias removed in AnyIO 4.15.
+    "anyio>=4.4,<4.15",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["backend", "backend.agents", "backend.api", "backend.graph", "backend.llm",
+            "backend.integrations", "backend.integrations.feishu", "backend.parsers",
+            "backend.services", "backend.tools", "backend.utils"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+cache_dir = "data/.pytest_cache"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+cache-dir = "data/.ruff_cache"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.mypy]
+python_version = "3.10"
+cache_dir = "data/.mypy_cache"
+check_untyped_defs = true
+ignore_missing_imports = true
+no_implicit_optional = true
+warn_unused_ignores = true
+
+[tool.coverage.run]
+source = ["backend"]
+branch = true
+data_file = "data/.coverage"
+
+[tool.coverage.report]
+fail_under = 75
+show_missing = true
+skip_covered = true
+
+[dependency-groups]
+dev = [
+    "anyio>=4.4,<4.15",
+    "mypy>=1.13",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+]

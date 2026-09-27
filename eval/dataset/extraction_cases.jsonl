@@ -1,0 +1,122 @@
+{"id": "X01", "group": "clean", "blocks": [{"location": "b1", "text": "Alpha V2.0 将于 2026 年 9 月 20 日正式发布。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-20", "entity_mention": "Alpha V2.0"}]}}
+{"id": "X02", "group": "clean", "blocks": [{"location": "b1", "text": "Release Date: 2026-09-20", "meta": {"context_entity": "Alpha V2.0"}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-20", "entity_mention": "Alpha V2.0"}]}}
+{"id": "X03", "group": "clean", "blocks": [{"location": "b1", "text": "回归测试将于 9 月 18 日完成", "meta": {}}],
+ "expect": {"facts": [{"predicate": "regression_deadline", "value": "2026-09-18"}]}}
+{"id": "X04", "group": "clean", "blocks": [{"location": "b1", "text": "灰度发布从 9 月 18 日开始", "meta": {}}],
+ "expect": {"facts": [{"predicate": "gray_release_date", "value": "2026-09-18"}],
+            "note": "回归 9 月 17 日是条件从句（若…则顺延），不是断言，不应产出 verified 事实"}}
+{"id": "X05", "group": "clean", "blocks": [{"location": "b1", "text": "上线日期：09-20", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-20"}]}}
+{"id": "X06", "group": "clean", "blocks": [{"location": "b1", "text": "对外公告时间定在 9 月 26 日", "meta": {}}],
+ "expect": {"facts": [{"predicate": "announcement_date", "value": "2026-09-26"}]}}
+
+{"id": "X07", "group": "change", "blocks": [{"location": "b1", "text": "由于支付接口延期，Alpha V2.0 发布时间由 9 月 20 日调整至 9 月 27 日。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27", "entity_mention": "Alpha V2.0"}]}}
+{"id": "X08", "group": "change", "blocks": [{"location": "b1", "text": "上线时间从 9 月 20 日推迟到 10 月 8 日", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-10-08"}]}}
+{"id": "X09", "group": "change", "blocks": [{"location": "b1", "text": "项目原计划 09-20 上线，最终调整为 09-27。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27"}]}}
+{"id": "X10", "group": "change", "blocks": [{"location": "b1", "text": "回归完成时间改到 9 月 24 日", "meta": {}}],
+ "expect": {"facts": [{"predicate": "regression_deadline", "value": "2026-09-24"}]}}
+{"id": "X11", "group": "change", "blocks": [{"location": "b1", "text": "发布时间由 9 月 20 日延期至 9 月 27 日。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27"}]}}
+{"id": "X12", "group": "change", "blocks": [{"location": "b1", "text": "本周确认 Alpha V2.0 保持 9 月 20 日上线不变。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-20", "entity_mention": "Alpha V2.0"}]}}
+
+{"id": "X13", "group": "hedged", "blocks": [{"location": "b1", "text": "上线时间可能要延到 9 月 27 日，暂定。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27", "unverified": true}]}}
+{"id": "X14", "group": "hedged", "blocks": [{"location": "b1", "text": "上线时间还在内部讨论。", "meta": {}},
+            {"location": "b2", "text": "那个时间大概在 9 月 28 日左右，还没最终确定。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-28", "unverified": true}],
+            "note": "指代消解：『那个时间』继承前文的 release_date 语境，且 hedged → Unverified 车道"}}
+{"id": "X15", "group": "hedged", "blocks": [{"location": "b1", "text": "回归估计 9 月 22 日差不多能完，再看情况。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "regression_deadline", "value": "2026-09-22", "unverified": true}]}}
+
+{"id": "X16", "group": "relative", "blocks": [{"location": "b1", "text": "上线时间往后挪到下周三，具体日子等通知。", "meta": {}}],
+ "expect": {"facts": []}}
+{"id": "X17", "group": "relative", "blocks": [{"location": "b1", "text": "上线大概要往后挪一周。", "meta": {}}],
+ "expect": {"facts": []}}
+{"id": "X18", "group": "relative", "blocks": [{"location": "b1", "text": "发布时间待定，定了同步给大家。", "meta": {}}],
+ "expect": {"facts": []}}
+{"id": "X19", "group": "relative", "blocks": [{"location": "b1", "text": "计划 9 月底上线，具体哪天待定。", "meta": {}}],
+ "expect": {"facts": []}}
+{"id": "X20", "group": "relative", "blocks": [{"location": "b1", "text": "回归结束后就上线，别催了。", "meta": {}}],
+ "expect": {"facts": []}}
+
+{"id": "X21", "group": "mixed", "blocks": [{"location": "b1", "text": "回归测试 9 月 18 日完成，灰度 9 月 19 日开始，正式上线 9 月 20 日。", "meta": {}}],
+ "expect": {"facts": [
+   {"predicate": "regression_deadline", "value": "2026-09-18"},
+   {"predicate": "gray_release_date", "value": "2026-09-19"},
+   {"predicate": "release_date", "value": "2026-09-20"}]}}
+{"id": "X22", "group": "mixed", "blocks": [{"location": "b1", "text": "9 月 20 日上线，付款节点 9 月 25 日，灰度 9 月 19 日。", "meta": {}}],
+ "expect": {"facts": [
+   {"predicate": "release_date", "value": "2026-09-20"},
+   {"predicate": "gray_release_date", "value": "2026-09-19"}]}}
+{"id": "X23", "group": "mixed", "blocks": [{"location": "b1", "text": "Alpha V2.0 定于 9 月 20 日正式上线，Beta V1.0 定于 10 月 15 日正式上线。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-20", "entity_mention": "Alpha V2.0"},
+                       {"predicate": "release_date", "value": "2026-10-15", "entity_mention": "Beta V1.0"}]}}
+{"id": "X24", "group": "mixed", "blocks": [{"location": "b1", "text": " Regression Deadline: 2026-09-18", "meta": {"context_entity": "Alpha V2.0"}},
+            {"location": "b2", "text": " Release Date: 2026-09-20", "meta": {"context_entity": "Alpha V2.0"}}],
+ "expect": {"facts": [
+   {"predicate": "regression_deadline", "value": "2026-09-18", "entity_mention": "Alpha V2.0"},
+   {"predicate": "release_date", "value": "2026-09-20", "entity_mention": "Alpha V2.0"}]}}
+{"id": "X25", "group": "mixed", "blocks": [{"location": "b1", "text": "灰度 9 月 18 日开始，若回归 9 月 17 日未完成则顺延。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "gray_release_date", "value": "2026-09-18"}],
+            "note": "回归 9 月 17 日是条件从句（若…则顺延），不是断言，不应产出 verified 事实"}}
+
+{"id": "X26", "group": "scope", "blocks": [{"location": "b1", "text": "负责人是张伟，状态：测试中，版本 V2.0，预算 120 万。", "meta": {}}],
+ "expect": {"facts": []}}
+{"id": "X27", "group": "scope", "blocks": [{"location": "b1", "text": "支付模块负责人由张伟变更为李娜。", "meta": {}}],
+ "expect": {"facts": []}}
+{"id": "X28", "group": "scope", "blocks": [{"location": "b1", "text": "项目状态由 Testing 变更为 Release Candidate。", "meta": {}}],
+ "expect": {"facts": []}}
+{"id": "X29", "group": "scope", "blocks": [{"location": "b1", "text": "本月销售额目标 500 万，已经完成 380 万。", "meta": {}}],
+ "expect": {"facts": []}}
+{"id": "X30", "group": "scope", "blocks": [{"location": "b1", "text": "会议纪要：参会人张伟、李娜、王芳。", "meta": {}}],
+ "expect": {"facts": []}}
+
+{"id": "X31", "group": "typo", "blocks": [{"location": "b1", "text": "发部时间由 9 月 20 日调正至 9 月 27 日。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27"}]}}
+{"id": "X32", "group": "typo", "blocks": [{"location": "b1", "text": "发布日斯：09-20", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-20"}]}}
+{"id": "X33", "group": "typo", "blocks": [{"location": "b1", "text": "回规测试将于 9 月 18 日完成", "meta": {}}],
+ "expect": {"facts": [{"predicate": "regression_deadline", "value": "2026-09-18"}]}}
+{"id": "X34", "group": "typo", "blocks": [{"location": "b1", "text": "灰渡发布从 9 月 18 日开始", "meta": {}}],
+ "expect": {"facts": [{"predicate": "gray_release_date", "value": "2026-09-18"}],
+            "note": "回归 9 月 17 日是条件从句（若…则顺延），不是断言，不应产出 verified 事实"}}
+
+{"id": "X35", "group": "spacing", "blocks": [{"location": "b1", "text": "发 布 时 间 由 9 月 20 日 调 整 至 9 月 27 日", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27"}]}}
+{"id": "X36", "group": "spacing", "blocks": [{"location": "b1", "text": "上 线 时 间 ： 9 月 27 日", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27"}]}}
+{"id": "X37", "group": "spacing", "blocks": [{"location": "b1", "text": "Release   Date:  2026-09-20", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-20"}]}}
+
+{"id": "X38", "group": "format", "blocks": [{"location": "b1", "text": "发布时间：９月２７日（全角）", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27"}]}}
+{"id": "X39", "group": "format", "blocks": [{"location": "b1", "text": "上线时间 9/27 正式发布", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27"}]}}
+{"id": "X40", "group": "format", "blocks": [{"location": "b1", "text": "上线时间 2026.9.27 确认", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27"}]}}
+
+{"id": "X41", "group": "english", "blocks": [{"location": "b1", "text": "The release date is 2026-09-27 due to the payment delay.", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27"}]}}
+{"id": "X42", "group": "english", "blocks": [{"location": "b1", "text": "Launch has been postponed to Sep 27, 2026.", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-09-27"}]}}
+{"id": "X43", "group": "english", "blocks": [{"location": "b1", "text": "Regression complete on 2026-09-24, gray release 2026-09-25.", "meta": {}}],
+ "expect": {"facts": [
+   {"predicate": "regression_deadline", "value": "2026-09-24"},
+   {"predicate": "gray_release_date", "value": "2026-09-25"}]}}
+
+{"id": "X44", "group": "crossyear", "blocks": [{"location": "b1", "text": "项目复盘会定在 2026-12-25。", "meta": {}},
+            {"location": "b2", "text": "Alpha V2.1 上线时间定在 12 月 30 日。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2026-12-30", "entity_mention": "Alpha V2.1"}]}}
+{"id": "X45", "group": "crossyear", "blocks": [{"location": "b1", "text": "2027 年 1 月 5 日发布 Alpha V2.1。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "release_date", "value": "2027-01-05", "entity_mention": "Alpha V2.1"}]}}
+{"id": "X46", "group": "crossyear", "blocks": [{"location": "b1", "text": "回归 12 月 28 日完成（今年内）。", "meta": {}},
+            {"location": "b2", "text": "上线 1 月 8 日，次年开年首播。", "meta": {}}],
+ "expect": {"facts": [{"predicate": "regression_deadline", "value": "2026-12-28"},
+                       {"predicate": "release_date", "value": "2027-01-08"}]},
+ "note": "跨年歧义：1 月 8 日应落在 2027（受前文今年=2026 提示），启发式按当前年推断将得 2026-01-08"}
