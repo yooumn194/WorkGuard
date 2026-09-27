@@ -15,9 +15,12 @@ COPY migrations ./migrations
 COPY frontend ./frontend
 COPY demo ./demo
 
+# Keep the named-volume mount point empty in the image. API and worker may
+# attach the same fresh volume concurrently; a baked child triggers a Docker
+# copy-up race when both containers start together.
 RUN pip install --no-cache-dir -r requirements.lock \
     && pip install --no-cache-dir --no-deps . \
-    && mkdir -p /app/data/artifacts \
+    && mkdir -p /app/data \
     && chown -R workguard:workguard /app
 
 USER workguard
