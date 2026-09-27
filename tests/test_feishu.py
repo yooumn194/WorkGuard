@@ -169,6 +169,11 @@ def test_sync_exposes_event_subscription_failure_without_blocking_manual_sync():
 
 def test_webhook_challenge_and_status_endpoints(monkeypatch):
     monkeypatch.setattr(settings, "feishu_verification_token", "verify-me")
+    monkeypatch.setattr(settings, "feishu_app_id", "")
+    monkeypatch.setattr(settings, "feishu_app_secret", "")
+    with SessionLocal() as session:
+        workspace = create_workspace(session, "unconfigured-feishu")
+        workspace_id = workspace.id
     with TestClient(app) as client:
         response = client.post("/api/integrations/feishu/webhook",
                                json={"challenge": "ajls384kdd", "type": "url_verification",
@@ -179,16 +184,13 @@ def test_webhook_challenge_and_status_endpoints(monkeypatch):
         status = client.get("/api/integrations/feishu/status")
         assert status.status_code == 200
         body = status.json()
-        assert body["configured"] == settings.feishu_configured()
+        assert body["configured"] is False
 
         # sync endpoint refuses cleanly when unconfigured
         result = client.post("/api/integrations/feishu/sync",
-                             json={"workspace_id": "ws_missing", "folder_token": "fld"})
-        if settings.feishu_configured():
-            assert result.status_code in (200, 404)
-        else:
-            assert result.status_code == 503
-            assert "not configured" in result.json()["detail"]
+                             json={"workspace_id": workspace_id, "folder_token": "fld"})
+        assert result.status_code == 503
+        assert "not configured" in result.json()["detail"]
 
 
 def test_webhook_ignores_unrelated_events(monkeypatch):
